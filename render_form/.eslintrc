@@ -1,0 +1,26 @@
+{	
+    "parserOptions": { 
+        "ecmaVersion": 8
+    },
+    "rules": {
+        "no-alert" : ["warn"],
+        "no-console" : ["warn"],
+        "no-debugger" : ["warn"],
+        "no-unused-vars" : ["warn"],
+        "no-useless-escape" :["warn"],
+        "no-useless-return" :["warn"],
+        "no-empty-function" :["warn"],
+        "no-new" :["warn"],
+        "no-new-object" :["warn"],
+        "no-new-wrappers" :["warn"],
+        "no-loop-func" :["warn"],
+        "no-unreachable" :["warn"],
+        "no-else-return" :["warn"],
+        "block-scoped-var" :["warn"],
+        "no-unsafe-negation":["warn"],
+        "no-unused-expressions" :["warn"],
+        "curly" :["warn"],
+        "comma-dangle" :["warn"],
+        "no-unused-labels":["warn"],        
+    }
+}
