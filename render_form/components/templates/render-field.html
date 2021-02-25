@@ -12,16 +12,16 @@
             <lyte-checkbox class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-name='checkbox' lt-prop-value='val' lt-prop-id="{{fieldProperty.fsm_field_api_name}}" lt-prop-label=""></lyte-checkbox>
             <% break;
         case "integer": %>
-            <lyte-number class="rf-valFld" field-property="{{fieldProperty}}" lt-prop-maxlength = 5 lt-prop-ignore-symbols = true> </lyte-number>
+            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-type='number' lt-prop-text-area-resize = '{"horizontal" : true, "vertical" : false }' lt-prop-appearance = 'box' lt-prop-placeholder = "Enter {{fieldProperty.fsm_field_label}}"> </lyte-input>
             <% break;
         case "picklist": %>
             <lyte-dropdown class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-options={{fieldProperty.list_values}} lt-prop-user-value="name" lt-prop-system-value="value"></lyte-dropdown>
             <% break;
         case "date": %>
-            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}"  lt-prop-type='date' lt-prop-current-date = "05/25/2018"></lyte-input>
+            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}"  lt-prop-type='date' lt-prop-format = "MM/DD/YYYY"></lyte-input>
             <% break;
         case "datetime": %>
-            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-type='datetime' lt-prop-format = "MM/DD/YYYY" lt-prop-current-date = "05/05/2020" lt-prop-default-time = "05:30 PM" lt-prop-dropdown = true></lyte-input>
+            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-type='datetime' lt-prop-format = "MM/DD/YYYY" lt-prop-dropdown = true></lyte-input>
             <% break;
         default: %>
             <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-appearance = 'box' lt-prop-placeholder = "Enter {{fieldProperty.fsm_field_label}}"> </lyte-input>

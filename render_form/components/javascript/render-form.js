@@ -7,6 +7,7 @@ Lyte.Component.register("render-form", {
         }
     },
     init: function() {
+        debugger;
         var layoutJson = this.getData("layoutData");
 
         this.manipulateLayoutData(layoutJson);
@@ -221,9 +222,12 @@ Lyte.Component.register("render-form", {
             var formData = this.getFormData();
 
             $L('#valuebox').val(JSON.stringify(formData))
+
+            this.executeMethod("onSave", formData);
         },
         cancelClickHandler: function() {
             console.log("cancel function triggered");
+            this.executeMethod("onCancel")
         }
     },
     getElementValueByType: function(element, fieldProperties) {

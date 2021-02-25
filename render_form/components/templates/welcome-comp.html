@@ -1,4 +1,4 @@
 <template tag-name='welcome-comp'>
 
-<render-form layout-data={{layoutData}} form-type="create"></render-form>
+<render-form on-save={{method('onSave')}} on-cancel={{method('onCancel')}} layout-data={{layoutData}} form-type="create"></render-form>
 </template>

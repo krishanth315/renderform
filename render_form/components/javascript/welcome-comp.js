@@ -746,5 +746,14 @@ Lyte.Component.register("welcome-comp", {
                 }
             })
         }
+    },
+    methods: {
+        "onSave": function(param) {
+            console.log(param);
+            alert("save function triggered");
+        },
+        "onCancel": function() {
+            alert("cancel function triggerred");
+        }
     }
 });
