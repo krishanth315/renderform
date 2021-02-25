@@ -7,7 +7,7 @@
     "private": true,
     "dependencies": {
         "lyte": "http://build/zoho/lyte/milestones/master/LYTE_V3_0_0/Lyte.zip",
-        "ui-components": "http://build/zoho/lyte_ui_component/milestones/master/LYTE_UI_COMPONENTS_V2_0_0/Lyte_ui_component.zip",
+        "ui-components": "http://build/zoho/lyte_ui_component/milestones/V3_0_X/LYTE_UI_COMPONENTS_V3_10_0/Lyte_ui_component.zip",
         "lyte-dom": "http://build/zoho/lyte_dom/milestones/master/LYTE_DOM_V2_0_0/Lyte_Dom.zip"
     },
     "scripts": {

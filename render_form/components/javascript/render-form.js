@@ -3,13 +3,12 @@ Lyte.Component.register("render-form", {
         return {
             fieldProperties: Lyte.attr("object", { default: {} }),
             formLayout: Lyte.attr("array", { default: [] }),
-            recordData: Lyte.attr("object", { default: {} })
+            recordData: Lyte.attr("object", { default: {} }),
+            formType: Lyte.attr("string", { default: "" })
         }
     },
     init: function() {
-        debugger;
         var layoutJson = this.getData("layoutData");
-
         this.manipulateLayoutData(layoutJson);
 
         console.log(this.getData("formLayout"));
@@ -84,6 +83,34 @@ Lyte.Component.register("render-form", {
         }
         return listValues;
     },
+    manipulateFormAttributes: function(fieldProperty) {
+        var type = this.getData("formType");
+
+        if (fieldProperty.fsm_read_only && fieldProperty.fsm_read_only[type]) {
+            fieldProperty.isReadOnly = true;
+        } else {
+            fieldProperty.isReadOnly = false;
+        }
+        var newClass = " ";
+        if (fieldProperty.fsm_data_type == "picklist" && type != "read") {
+            newClass += "selectfldvalue ";
+        }
+        if (fieldProperty.fsm_data_type == "boolean") {
+            newClass += "formcheckbox ";
+        }
+        if (fieldProperty.fsm_data_type == "textarea") {
+            newClass += "formlistbox ";
+        }
+
+        if (fieldProperty.fsm_data_type == "picklist") {
+            fieldProperty.list_values = this.convertPicklistValues(fieldProperty.pick_list_values);
+        }
+
+        fieldProperty.newClass = newClass;
+        return fieldProperty;
+
+
+    },
     manipulateLayoutData: function(makeData) {
         var LayoutData = [];
         var currencyList = [];
@@ -92,7 +119,7 @@ Lyte.Component.register("render-form", {
         var self = this;
 
         var newSections = self.reorderSequence(makeData.sections);
-        self.data.formType = "edit";
+        // self.data.formType = "edit";
 
         $L.each(newSections, function(index, sectionData) {
             var sectionObj = { column: [], type: sectionData.fsm_section_type, module_name: sectionData.fsm_module_name, label: sectionData.fsm_section_label };
@@ -102,6 +129,7 @@ Lyte.Component.register("render-form", {
                 $L.each(sectionData.fields, function(fieldIndex, fldDsta) {
 
                     var fieldData = self.copyAsValue({}, fldDsta)
+                    fieldData = self.manipulateFormAttributes(fieldData)
                     if (!column[fieldData.column_number - 1]) {
                         column[fieldData.column_number - 1] = [];
                     }
@@ -115,9 +143,9 @@ Lyte.Component.register("render-form", {
                     // }
 
 
-                    if (fieldData.fsm_data_type == "picklist") {
-                        self.data.fieldProperties[fieldData.fsm_field_api_name].list_values = self.convertPicklistValues(self.data.fieldProperties[fieldData.fsm_field_api_name].pick_list_values);
-                    }
+                    // if (fieldData.fsm_data_type == "picklist") {
+                    //     self.data.fieldProperties[fieldData.fsm_field_api_name].list_values = self.convertPicklistValues(self.data.fieldProperties[fieldData.fsm_field_api_name].pick_list_values);
+                    // }
                     if (self.data.recordData[fieldData.module_name] && (self.data.recordData[fieldData.module_name][fieldData.field_api] || self.data.recordData[fieldData.module_name][fieldData.field_api] == false)) {
                         self.data.fieldProperties[fieldData.fsm_field_api_name].field_value = self.data.recordData[fieldData.module_name][fieldData.field_api];
                         if ((fieldData.fsm_data_type == "tax" && !Render_Methods.isView(instance)) || fieldData.fsm_data_type == "discount" || fieldData.fsm_data_type == "unit") {
@@ -231,6 +259,7 @@ Lyte.Component.register("render-form", {
         }
     },
     getElementValueByType: function(element, fieldProperties) {
+        var self = this;
         if (fieldProperties) {
             var type = fieldProperties.fsm_data_type;
             var valueAsJson = {};
@@ -344,11 +373,154 @@ Lyte.Component.register("render-form", {
                     // 	}
                     // 	break;
             }
-            // var respJson = Render_Methods.validateElementByType(element, valueAsJson, fieldProperties);
-            // return { validator: respJson, value: valueAsJson };
-            return { validator: { isValid: true }, value: valueAsJson }
+            var respJson = self.validateElementByType(element, valueAsJson, fieldProperties);
+            return { validator: respJson, value: valueAsJson };
+            // return { validator: { isValid: true }, value: valueAsJson }
         } else {
             return { value: null };
+        }
+    },
+    isElementVisible: function($element, fieldProperty) {
+        if (["lookup", "picklist", , "userlookup", "ownerlookup", "multipicklist", "tax", "taxauthority", "currencypicklist", "pos", "statetax", "gsttreatment", "vattreatment", "picklistid", "taxable"].indexOf(fieldProperty.fsm_data_type) != -1) {
+            $element = $L($element).closest(".field-cont");
+        }
+        if (["rating"].indexOf(fieldProperty.fsm_data_type) != -1) {
+            $element = $L($element).closest(".field-cont");
+        }
+
+        return $L($element).is(':visible');
+    },
+    validateElementByType: function(element, value, fieldProperties) {
+        var self = this;
+        if (fieldProperties) {
+            var type = fieldProperties.fsm_data_type;
+            var validJson = {
+                isValid: true
+            };
+            var messages = [];
+            if (fieldProperties.required == true && self.isElementVisible(element, fieldProperties)) {
+                if (!value || value == '') {
+                    validJson.isValid = false;
+                    messages.push(fieldProperties.fsm_field_label + ' is mandatory');
+                }
+
+                if ((type == "currency" || type == "exchangecurrency") && value >= 0) {
+                    validJson.isValid = true;
+                    messages = [];
+                }
+                if (type == "taxable" && value == false) {
+                    validJson.isValid = true;
+                    messages = [];
+                }
+            }
+
+            //comp todo
+            // if (fieldProperties.fsm_validation_rule) {
+            //     try {
+            //         var regex = new Regex(fieldProperties.fsm_validation_rule);
+            //         if (!regex.test(value)) {
+            //             validJson.isValid = false;
+            //             messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+            //         }
+            //     } catch (err) {
+            //         validJson.isValid = false;
+            //         messages.push('Error in parsing ' + fieldProperties.fsm_field_label);
+            //     }
+            // }
+
+            switch (type) {
+                case "picklist":
+                case "rating":
+                    if (fieldProperties.required && (value == '-None-' || !value || value == undefined) && self.isElementVisible(element, fieldProperties)) {
+                        validJson.isValid = false;
+                        messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+                    }
+                    break;
+                    // yet to be supported
+                    // case "website":
+                    // case "multiselectlookup":
+                    // case "multiselectpicklist":
+                case "multipicklist":
+                    if (fieldProperties.required && (!value || value == undefined || value.length == 0) && self.isElementVisible(element, fieldProperties)) {
+                        validJson.isValid = false;
+                        messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+                    }
+                    break;
+                case "currency":
+                case "exchangecurrency":
+                    if (value < 0) {
+                        validJson.isValid = false;
+                        messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+                    }
+                    break;
+                case "boolean":
+                case "text":
+                case "website":
+                case "textarea":
+                case "website":
+                case "autonumber":
+                case "lookup":
+                case "address":
+                case "userlookup":
+                case "ownerlookup":
+                case "discount":
+                case "double":
+                case "unit":
+                case "phone":
+                    break;
+                    // if (!isNaN(Number(value))) {
+                    //     validJson.isValid = false;
+                    //     messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+                    // }
+                    // break;
+                case "integer":
+                    if (value) {
+                        var numbers = /^[0-9]+$/;
+                        var checkValue = "" + value;
+                        if (!checkValue.match(numbers)) {
+                            validJson.isValid = false;
+                            messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+                        }
+                    }
+                    break
+                case "email":
+                    var filter = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-\+])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                    if (value && value != "" && !filter.test(value)) {
+                        validJson.isValid = false;
+                        messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+                    }
+                    break;
+                case "datetime":
+                    //comp todo
+                    // var daterange = fieldProperties.fsm_date_range;
+                    // var rangeValues = Render_Const.ranges[daterange];
+                    // if (value && fieldProperties && fieldProperties.fsm_validate_relative_date) {
+                    //     if (rangeValues) {
+                    //         if (moment(value).isBefore(rangeValues.minDate) || moment(value).isAfter(rangeValues.maxDate)) {
+                    //             validJson.isValid = false;
+                    //             messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+                    //         }
+                    //     }
+                    // }
+                    break;
+                case "date":
+                    //comp todo
+                    // var daterange = fieldProperties.fsm_date_range;
+                    // var rangeValues = Render_Const.ranges[daterange];
+                    // if (value && fieldProperties && fieldProperties.fsm_validate_relative_date) {
+                    //     if (rangeValues) {
+                    //         if (moment(value).isBefore(rangeValues.minDate.startOf('day')) || moment(value).isAfter(rangeValues.maxDate.endOf('day'))) {
+                    //             validJson.isValid = false;
+                    //             messages.push('Enter a valid ' + fieldProperties.fsm_field_label);
+                    //         }
+                    //     }
+                    // }
+                    break;
+                case "formula":
+                    break;
+            }
+            validJson.message = messages;
+            return validJson;
         }
     },
     getFormData: function(skipValidation) {
@@ -358,7 +530,6 @@ Lyte.Component.register("render-form", {
         var finalJSON = {};
         var doNotReturn = false;
         var errorFields = [];
-        debugger;
 
         $parentEle = this.$node;
 
@@ -379,7 +550,7 @@ Lyte.Component.register("render-form", {
 
             if (!valueResp.validator.isValid) {
                 doNotReturn = true
-                errorFields.push({ $ele: fieldProperty.$errorText, message: valueResp.validator.message })
+                errorFields.push({ $ele: $valueEle, message: valueResp.validator.message })
             }
             if (!finalJSON[moduleName]) {
                 finalJSON[moduleName] = {};
@@ -397,7 +568,58 @@ Lyte.Component.register("render-form", {
             // }
         })
 
-        return finalJSON;
+
+        if (doNotReturn) {
+            debugger;
+            self.showErrorMessageForFields(errorFields);
+            return false;
+        } else {
+            return finalJSON;
+        }
+    },
+    showErrorMessageForFields: function(errorFields) {
+        var self = this;
+        if (errorFields.length) {
+            $L.each(errorFields, function(index, errData) {
+                    var errElement = errData.$ele;
+                    var fieldProperty = errData.fieldProperty;
+
+                    //comp todo
+                    // if (errData.isSubForm) {
+                    //     if (Render_Methods.isLookupBasedField(fieldProperty.fsm_data_type)) {
+                    //         errElement = $(errElement).closest('.lookupWrap');
+                    //     } else if (fieldProperty.fsm_data_type == "picklist" || fieldProperty.fsm_data_type == "multipicklist" || fieldProperty.fsm_data_type == "tax") {
+                    //         errElement = $(errElement).closest('.widget_select_div').find('.widget-select-styled');
+                    //     }
+
+                    //     $(errElement).addClass('subformMandatoryHighlight')
+                    //     setTimeout(function() {
+                    //         $(errElement).removeClass('subformMandatoryHighlight')
+                    //     }, 5000);
+                    // } else {
+                    // var message = "";
+                    // $.each(errData.message, function(index, msg) {
+                    //     message += msg
+                    //     if (errData.message.length != index + 1) {
+                    //         message += ", ";
+                    //     }
+                    // })
+                    // $(errElement).closest('.field-cont').find('.errorText').text('' + message)
+                    // }
+
+                    var message = "";
+                    $L.each(errData.message, function(index, msg) {
+                        message += msg
+                        if (errData.message.length != index + 1) {
+                            message += ", ";
+                        }
+                    })
+                    $L(errElement).closest('.field-cont').find('.errorText').text('' + message)
+
+                })
+                //comp todo
+                // Render_Methods.scrollDiv(instance, errorFields[0].$ele);
+        }
     }
 
 });

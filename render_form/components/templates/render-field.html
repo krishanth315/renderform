@@ -9,19 +9,23 @@
             <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-type='textarea' lt-prop-text-area-resize = '{"horizontal" : true, "vertical" : false }' lt-prop-appearance = 'box' lt-prop-placeholder = "Enter {{fieldProperty.fsm_field_label}}"> </lyte-input>
             <% break;
         case "boolean": %>
-            <lyte-checkbox class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-name='checkbox' lt-prop-value='val' lt-prop-id="{{fieldProperty.fsm_field_api_name}}" lt-prop-label=""></lyte-checkbox>
+            <lyte-checkbox class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-name='checkbox' lt-prop-value='val' lt-prop-id="{{fieldProperty.fsm_field_api_name}}" lt-prop-label="" on-changed={{method('checkboxOnChange',event,this,fieldProperty.fsm_field_api_name)}}></lyte-checkbox>
+            <% break;
+        case "currency":
+        case "double": %>
+            <lyte-number class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-placeholder = "Enter {{fieldProperty.fsm_field_label}}"> </lyte-number>
             <% break;
         case "integer": %>
-            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-type='number' lt-prop-text-area-resize = '{"horizontal" : true, "vertical" : false }' lt-prop-appearance = 'box' lt-prop-placeholder = "Enter {{fieldProperty.fsm_field_label}}"> </lyte-input>
+            <lyte-number lt-prop-ignore-symbols = true class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-placeholder = "Enter {{fieldProperty.fsm_field_label}}" fsm_max_digits_allowed> </lyte-number>
             <% break;
         case "picklist": %>
-            <lyte-dropdown class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-options={{fieldProperty.list_values}} lt-prop-user-value="name" lt-prop-system-value="value"></lyte-dropdown>
+            <lyte-dropdown class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-options={{fieldProperty.list_values}} lt-prop-user-value="name" lt-prop-system-value="value" on-option-selected={{method('selectOnChange',event,this,fieldProperty.fsm_field_api_name)}}></lyte-dropdown>
             <% break;
         case "date": %>
-            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}"  lt-prop-type='date' lt-prop-format = "MM/DD/YYYY"></lyte-input>
+            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}"  lt-prop-type='date' lt-prop-format = "{{fieldProperty.fsm_date_format}}" on-date-change={{method('dateOnChange',event,this,fieldProperty.fsm_field_api_name)}} lt-prop-placeholder = "{{fieldProperty.fsm_date_format}}" lt-prop-appearance = 'box'></lyte-input>
             <% break;
         case "datetime": %>
-            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-type='datetime' lt-prop-format = "MM/DD/YYYY" lt-prop-dropdown = true></lyte-input>
+            <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-type='datetime' lt-prop-format = "MM/DD/YYYY" lt-prop-dropdown = true on-date-change={{method('datetimeOnChange',event,this,fieldProperty.fsm_field_api_name)}} on-time-change={{method('datetimeOnChange',event,this,fieldProperty.fsm_field_api_name)}} lt-prop-placeholder = "{{fieldProperty.fsm_date_format}}" lt-prop-appearance = 'box'></lyte-input>
             <% break;
         default: %>
             <lyte-input class="rf-valFld" field-property="{{fieldProperty}}" id="{{fieldProperty.fsm_field_api_name}}" lt-prop-appearance = 'box' lt-prop-placeholder = "Enter {{fieldProperty.fsm_field_label}}"> </lyte-input>

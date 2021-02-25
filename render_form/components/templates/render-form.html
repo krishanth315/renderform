@@ -8,7 +8,11 @@
                 <% sectionData.column.forEach(function(colVal,colInd){ %>
                     <li style="width: 100%; float: left;">
                         <% colVal.forEach(function(fldData,fldInd){ %>
-                            <div class="field-cont" style="padding: 10px;">
+                            <% if(fldData.view_type[formType]){ %>
+                            <!-- <% if(fldInd.view_type[formType]) %> -->
+                            
+                            <div class="field-cont{{fldData.newClass}}{{if(ifEquals(fldData.required,true),' mandatory')}}{{if(ifEquals(fldData.isReadOnly,true),' disabled')}}" style="padding: 10px;">
+
                                 <div style="width: 32%;float: left;text-align: right;padding-right: 20px;"><span class="fld-text">{{fldData.fsm_field_label}}</span></div>
                                 <div style="width: 64%;float: left;" data-apiname="{{fldData.fsm_field_api_name}}" data-apinameorg="{{fldData.fsm_field_label}}" data-datatype="{{fldData.fsm_data_type}}">
                                     <render-field data-type="{{fldData.fsm_data_type}}" field-id="{{fldData.fsm_field_api_name}}" field-property="{{fldData}}"></render-field>
@@ -16,6 +20,7 @@
                                 <p class="infoLabel" id=""></p>
                                 <p class="errorText"></p>
                             </div>
+                            <% } %>
                         <% }) %> 
                     </li>
                 <% }) %> 
