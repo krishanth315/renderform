@@ -111,6 +111,40 @@ Lyte.Component.register("render-form", {
 
 
     },
+    setRecordValue: function(fieldData, recordValue) {
+        var value = recordValue;
+        switch (fieldData.fsm_data_type) {
+            case "lookup":
+            case "userlookup":
+            case "ownerlookup":
+            case "address":
+                if (this.getData("formType") == "read") {
+                    if (recordValue && recordValue.name) {
+                        value = recordValue.name;
+                    } else {
+                        value = null;
+                    }
+                }
+                break;
+            case "date":
+                if (recordValue) {
+                    value = recordValue;
+                }
+                break;
+            case "datetime":
+                if (recordValue) {
+                    value = recordValue;
+                }
+                break;
+            default:
+                if (recordValue) {
+                    value = recordValue;
+                }
+                break;
+        }
+
+        return value;
+    },
     manipulateLayoutData: function(makeData) {
         var LayoutData = [];
         var currencyList = [];
@@ -147,7 +181,9 @@ Lyte.Component.register("render-form", {
                     //     self.data.fieldProperties[fieldData.fsm_field_api_name].list_values = self.convertPicklistValues(self.data.fieldProperties[fieldData.fsm_field_api_name].pick_list_values);
                     // }
                     if (self.data.recordData[fieldData.module_name] && (self.data.recordData[fieldData.module_name][fieldData.field_api] || self.data.recordData[fieldData.module_name][fieldData.field_api] == false)) {
-                        self.data.fieldProperties[fieldData.fsm_field_api_name].field_value = self.data.recordData[fieldData.module_name][fieldData.field_api];
+
+                        self.data.fieldProperties[fieldData.fsm_field_api_name].field_value = self.setRecordValue(fieldData, self.data.recordData[fieldData.module_name][fieldData.field_api])
+                            // self.data.fieldProperties[fieldData.fsm_field_api_name].field_value = self.data.recordData[fieldData.module_name][fieldData.field_api];
                         if ((fieldData.fsm_data_type == "tax" && !Render_Methods.isView(instance)) || fieldData.fsm_data_type == "discount" || fieldData.fsm_data_type == "unit") {
                             // comp todo
                             // if (self.data.fieldProperties[fieldData.fsm_field_api_name].taxList) {
@@ -235,10 +271,9 @@ Lyte.Component.register("render-form", {
                     sectionObj.fields.push(self.data.fieldProperties[fieldData.fsm_field_api_name]);
                 })
             }
-            self.data.formLayout.push(sectionObj)
+            LayoutData.push(sectionObj)
         })
-
-
+        self.setData("formLayout", LayoutData);
         // comp todo
         // if (makeData.currencyList) {
         //     Render_State[instance].currencyList = makeData.currencyList;

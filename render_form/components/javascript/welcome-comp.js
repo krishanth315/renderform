@@ -744,6 +744,21 @@ Lyte.Component.register("welcome-comp", {
                         "fsm_section_label": "Asset Information"
                     }]
                 }
+            }),
+            recordData: Lyte.attr('object', {
+                default: {
+                    "Assets": {
+                        "Name": "cdcd",
+                        "Description": "cdcdc",
+                        "Address": { name: "djbedebdj" },
+                        "Checkbox_2__C": true,
+                        "Email_1__C": null,
+                        "Date_1__C": "Feb 26, 2021",
+                        "Installation_Date": "07:17 PM",
+                        "Pick_list_4__C": null,
+                        "Phone_1__C": null
+                    }
+                }
             })
         }
     },

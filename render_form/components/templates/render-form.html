@@ -7,21 +7,39 @@
             <ul>
                 <% sectionData.column.forEach(function(colVal,colInd){ %>
                     <li style="width: 100%; float: left;">
-                        <% colVal.forEach(function(fldData,fldInd){ %>
-                            <% if(fldData.view_type[formType]){ %>
-                            <!-- <% if(fldInd.view_type[formType]) %> -->
-                            
-                            <div class="field-cont{{fldData.newClass}}{{if(ifEquals(fldData.required,true),' mandatory')}}{{if(ifEquals(fldData.isReadOnly,true),' disabled')}}" style="padding: 10px;">
+                        <% if(formType == "create" || formType == "edit" || formType == "quickcreate"){ %>
+                            <% colVal.forEach(function(fldData,fldInd){ %>
+                                <% if(fldData.view_type[formType]){ %>
+                                <!-- <% if(fldInd.view_type[formType]) %> -->
+                                
+                                <div class="field-cont{{fldData.newClass}}{{if(ifEquals(fldData.required,true),' mandatory')}}{{if(ifEquals(fldData.isReadOnly,true),' disabled')}}" style="padding: 10px;">
 
-                                <div style="width: 32%;float: left;text-align: right;padding-right: 20px;"><span class="fld-text">{{fldData.fsm_field_label}}</span></div>
-                                <div style="width: 64%;float: left;" data-apiname="{{fldData.fsm_field_api_name}}" data-apinameorg="{{fldData.fsm_field_label}}" data-datatype="{{fldData.fsm_data_type}}">
-                                    <render-field data-type="{{fldData.fsm_data_type}}" field-id="{{fldData.fsm_field_api_name}}" field-property="{{fldData}}"></render-field>
+                                    <div style="width: 32%;float: left;text-align: right;padding-right: 20px;"><span class="fld-text">{{fldData.fsm_field_label}}</span></div>
+                                    <div style="width: 64%;float: left;" data-apiname="{{fldData.fsm_field_api_name}}" data-apinameorg="{{fldData.fsm_field_label}}" data-datatype="{{fldData.fsm_data_type}}">
+                                        <render-field data-type="{{fldData.fsm_data_type}}" field-id="{{fldData.fsm_field_api_name}}" field-property="{{fldData}}" field-value="{{fldData.field_value}}"></render-field>
+                                    </div>
+                                    <p class="infoLabel" id=""></p>
+                                    <p class="errorText"></p>
                                 </div>
-                                <p class="infoLabel" id=""></p>
-                                <p class="errorText"></p>
-                            </div>
-                            <% } %>
-                        <% }) %> 
+                                <% } %>
+                            <% }) %> 
+
+                        <% } else if(formType == "read") { %>
+                            <% colVal.forEach(function(fldData,fldInd){ %>
+                                <% if(fldData.view_type[formType]){ %>
+                                    <div style="padding: 10px;">
+                                        <div style="width: 32%;float: left;text-align: right;padding-right: 20px;"><span class="fld-text">{{fldData.fsm_field_label}}</span></div>
+                                        <div style="width: 64%;float: left;" data-apiname="{{fldData.fsm_field_api_name}}" data-apinameorg="{{fldData.fsm_field_label}}" data-datatype="{{fldData.fsm_data_type}}">
+                                            <% if(fldData.field_value){ %>
+                                                <span id="{{fldData.fsm_field_api_name}}">{{fldData.field_value}}</span>
+                                            <% } else { %>
+                                                <span id="{{fldData.fsm_field_api_name}}">--</span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% }) %> 
+                        <% } %>
                     </li>
                 <% }) %> 
 
@@ -32,16 +50,17 @@
             
         <% } %>
     <% }) %>
-    <div>
-        <div id="saveBtn" class="BtnBG">
-            <div class="widthcontrol">
-                <button class="secondaryBtn mR10" onclick={{action('cancelClickHandler')}}>Cancel</button>
-                <button class="primaryBtn zf-button zf-primary-btn" onclick={{action('saveClickHandler')}}>
-                    <span class="zf-button-text">Save</span>
-                </button>
+    <% if(formType == "create" || formType == "edit" || formType == "quickcreate"){ %>
+        <div>
+            <div id="saveBtn" class="BtnBG">
+                <div class="widthcontrol">
+                    <button class="secondaryBtn mR10" onclick={{action('cancelClickHandler')}}>Cancel</button>
+                    <button class="primaryBtn zf-button zf-primary-btn" onclick={{action('saveClickHandler')}}>
+                        <span class="zf-button-text">Save</span>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-    <input type="text" id="valuebox"></input>
-
+        <input type="text" id="valuebox"></input>
+    <% } %>
 </template>
