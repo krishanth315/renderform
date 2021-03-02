@@ -753,7 +753,7 @@ Lyte.Component.register("welcome-comp", {
                         "Address": { name: "djbedebdj" },
                         "Checkbox_2__C": true,
                         "Email_1__C": null,
-                        "Date_1__C": "Feb 26, 2021",
+                        "Date_1__C": "Feb 27, 2021",
                         "Installation_Date": "07:17 PM",
                         "Pick_list_4__C": null,
                         "Phone_1__C": null

@@ -13,6 +13,14 @@ Lyte.Component.register("render-form", {
 
         console.log(this.getData("formLayout"));
     },
+    didConnect: function() {
+        // comp todo
+        // manipulateFormAttributes
+
+    },
+    didDestroy: function() {
+        // after destroy
+    },
     reorderSequence: function(sections) {
         function sortByProperty(property) {
             return function(a, b) {
